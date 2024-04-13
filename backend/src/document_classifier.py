@@ -9,6 +9,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+
+from typing import Tuple
+
 
 class BaseDocumentClassifier(ABC):
     """
@@ -58,33 +63,53 @@ class SklearnDocumentClassifier(BaseDocumentClassifier):
         Returns labels of documents contents
     """
 
-    def __init__(self, model_path: str, path_to_old_train_data: str) -> None:
+    def __init__(self, 
+                 model_path: str, 
+                 path_to_old_train_data: str,
+                 random_state: int,
+                 test_size: float) -> None:
+        
         super().__init__(model_path)
 
         self.pipeline = joblib.load(model_path)
         self.path_to_old_train_data = path_to_old_train_data
 
+        self.random_state = random_state
+        self.test_size = test_size
+
     def predict(self, contents: List[str]) -> List[str]:
         return self.pipeline.predict(contents)
     
-    def train(self, new_train_data: pd.DataFrame):
-        old_train_data = pd.read_csv(self.path_to_old_train_data)
+    def train(self, new_data: pd.DataFrame):
+        old_data = pd.read_csv(self.path_to_old_train_data)
 
-        new_train_data = pd.concat([
-            old_train_data, new_train_data
+        new_data = pd.concat([
+            old_data, new_data
         ])
 
-        vectorizer = TfidfVectorizer().fit(new_train_data.text)
+        vectorizer = TfidfVectorizer().fit(new_data.text)
 
-        X_train = vectorizer.transform(new_train_data.text)
-        y_train = new_train_data["class"]
+        train, test = train_test_split(new_data, test_size=self.test_size, random_state=self.random_state)
+
+        X_train = vectorizer.transform(train.text)
+        y_train = train["class"]
+
+        X_test = vectorizer.transform(test.text)
+        y_test = test["class"]
 
         model = LogisticRegression().fit(X_train, y_train)
+
+        y_pred = model.predict(X_test)
+
+        metrics = classification_report(y_test, y_pred, output_dict=True)
 
         pipe = Pipeline(steps=[
             ("Vectorizer", vectorizer), ("LogisticRegression", model)
         ])
 
         self.pipeline = pipe
+
+        return metrics
+
 
 

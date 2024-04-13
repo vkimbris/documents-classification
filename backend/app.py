@@ -14,7 +14,10 @@ app = FastAPI()
 
 
 document_classifier = SklearnDocumentClassifier(
-    model_path=MODEL_PATH, path_to_old_train_data=PATH_TO_OLD_DATA
+    model_path=MODEL_PATH, 
+    path_to_old_train_data=PATH_TO_OLD_DATA, 
+    random_state=RANDOM_STATE, 
+    test_size=TEST_SIZE
 )
 
 document_parser = TikaDocumentParser(
@@ -37,9 +40,9 @@ def get_labels():
 def train(train_data: UploadFile = File(...)):
     new_train_data = pd.read_csv(train_data.file)
 
-    document_classifier.train(new_train_data)
+    metrics = document_classifier.train(new_train_data)
 
-    return {"status": "Model trained succesfully."}
+    return {"status": "Model trained succesfully.", "classificationReport": metrics}
 
 @app.post("/classify-doc")
 async def classify_document(files: list[UploadFile]):
