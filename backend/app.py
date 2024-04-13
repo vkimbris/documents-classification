@@ -1,3 +1,7 @@
+import codecs
+import csv
+import pandas as pd
+
 from fastapi import FastAPI, File, UploadFile
 
 from src.document_classifier import SklearnDocumentClassifier
@@ -10,7 +14,7 @@ app = FastAPI()
 
 
 document_classifier = SklearnDocumentClassifier(
-    model_path=MODEL_PATH
+    model_path=MODEL_PATH, path_to_old_train_data=PATH_TO_OLD_DATA
 )
 
 document_parser = TikaDocumentParser(
@@ -28,6 +32,14 @@ def get_labels():
     labels = list(labels)
     
     return {"labels": labels}
+
+@app.post("/updateModel")
+def train(train_data: UploadFile = File(...)):
+    new_train_data = pd.read_csv(train_data.file)
+
+    document_classifier.train(new_train_data)
+
+    return {"status": "Model trained succesfully."}
 
 @app.post("/classify-doc")
 async def classify_document(files: list[UploadFile]):
