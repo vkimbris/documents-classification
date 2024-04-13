@@ -7,6 +7,11 @@ from fastapi import FastAPI, File, UploadFile
 from src.document_classifier import SklearnDocumentClassifier
 from src.document_parser import TikaDocumentParser
 
+from src.regs import SparsePhiRegularizer, SparseThetaRegularizer
+from src.plsi import PLSI
+
+from octis.dataset.dataset import Dataset
+
 from src.constants import *
 
 
@@ -14,15 +19,18 @@ app = FastAPI()
 
 
 document_classifier = SklearnDocumentClassifier(
-    model_path=MODEL_PATH, 
-    path_to_old_train_data=PATH_TO_OLD_DATA, 
-    random_state=RANDOM_STATE, 
-    test_size=TEST_SIZE
+    model_path=CLASSIFIER_PATH, 
+    path_to_old_train_data=CLASSIFIER_PATH_PATH_TO_OLD_DATA, 
+    random_state=CLASSIFIER_RANDOM_STATE, 
+    test_size=CLASSIFIER_TEST_SIZE
 )
 
 document_parser = TikaDocumentParser(
-    tika_server=TIKA_SERVER
+    tika_server=PARSER_TIKA_SERVER
 )
+
+topic_modeling_dataset = Dataset()
+topic_modeling_dataset.load_custom_dataset_from_folder(TOPIC_MODELER_PATH_TO_DATASET)
 
 
 @app.get("/")
@@ -60,3 +68,33 @@ async def classify_document(files: list[UploadFile]):
         })  
     
     return predictions
+
+@app.post("/topicModeling")
+def topic_modeling(n_topics: int, seed: int):
+    topic_modeler = PLSI(
+        dataset=topic_modeling_dataset,
+        num_topics=n_topics,
+        seed=seed,
+        regularizers={
+            "phi": [
+                SparsePhiRegularizer(alpha=TOPIC_MODELER_PHI)
+            ],
+
+            "theta": [
+                SparseThetaRegularizer(alpha=TOPIC_MODELER_THETA)
+            ]
+        }
+    )
+
+    topics = topic_modeler.train(max_iter=100, verbose=True)["topics"]
+    representative_docs = topic_modeler.get_representative_docs(TOPIC_MODELER_PASS_TO_ORIGINAL_CORPUS, top_n_docs=3)
+
+    results = []
+    for k in range(n_topics):
+        results.append({
+            "topicID": k,
+            "topicKeyWords": topics[k],
+            "topicRepresentativeDocuments": representative_docs[k]
+        })
+
+    return results
