@@ -22,6 +22,12 @@ document_parser = TikaDocumentParser(
 def read_root():
     return {"Hello": "World"}
 
+@app.get("/labels")
+def get_labels():
+    labels = document_classifier.pipeline.classes_
+    labels = list(labels)
+    
+    return {"labels": labels}
 
 @app.post("/classify-doc")
 async def classify_document(files: list[UploadFile]):

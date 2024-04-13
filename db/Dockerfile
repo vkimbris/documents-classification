@@ -1,11 +1,11 @@
 FROM python:3.10-slim
 
-WORKDIR /app
+WORKDIR /db
 
-COPY . /app
+COPY . /db
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 8000
+EXPOSE 8001
 
 CMD ["bash", "run.sh"]
