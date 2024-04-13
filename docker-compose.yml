@@ -1,0 +1,13 @@
+version: '3'
+services:
+  document-classifier:
+    depends_on:
+      - tika
+    build:
+      context: "./app"
+      dockerfile: Dockerfile
+    ports:
+      - "0.0.0.0:8000:8000"
+
+  tika:
+    image: apache/tika
