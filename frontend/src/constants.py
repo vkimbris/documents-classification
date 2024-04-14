@@ -1,4 +1,5 @@
 SERVER_API = "http://backend:8000"
+# SERVER_API = "http://51.250.10.118:8000"
 
 EXAMPLE_TRAIN_TABLE = """| text | class |
 | --- | --- |
