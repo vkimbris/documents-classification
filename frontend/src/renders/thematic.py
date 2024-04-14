@@ -12,6 +12,9 @@ def render_thematic_section():
     This function handles the user input for the number of topics and random seed,
     performs the topic extraction from the training set.
     """
+    st.write('''
+   Найдите в документах скрытые темы, используя этот сервис.
+     ''')
     topics = st.number_input('Введите количество топиков', min_value=5, max_value=100, value=5, step=1)
     seed = st.number_input('Введите random seed', min_value=5, value=42, step=1)
 
