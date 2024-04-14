@@ -34,8 +34,8 @@ def render_ner_section():
             return
 
         df = pd.DataFrame(result)
-        df.drop_duplicates(inplace=True)
-        df = df.rename(columns=NER_COLUMNS)
+        df = df.rename(columns=NER_COLUMNS)[NER_COLUMNS]
         df["Класс"] = df["Класс"].replace(NER_ENTITIES)
+        df.drop_duplicates(inplace=True)
 
         st.dataframe(df[NER_COLUMNS.values()], use_container_width=True, hide_index=True)
