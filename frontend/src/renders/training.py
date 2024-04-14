@@ -6,6 +6,7 @@ import requests
 from src.constants import EXAMPLE_TRAIN_TABLE, SERVER_API
 from src.utils import create_classification_report
 
+
 def render_training_section() -> None:
     """
     Renders the training section of the Streamlit app.
