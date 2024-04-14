@@ -1,4 +1,4 @@
-CLASSIFIER_PATH = "models/model_v1.pkl"
+CLASSIFIER_PATH = "models/classifier.pkl"
 CLASSIFIER_PATH_PATH_TO_OLD_DATA = "data/train.csv"
 CLASSIFIER_TEST_SIZE = 0.1
 CLASSIFIER_RANDOM_STATE = 42
@@ -13,3 +13,7 @@ TOPIC_MODELER_PHI = 0.3
 TOPIC_MODELER_THETA = 0.1
 TOPIC_MODELER_SEED = 21
 TOPIC_MODELER_PASS_TO_ORIGINAL_CORPUS = "data/topic_modeling.txt"
+
+
+NER_MODEL_PATH = "lxyuan/span-marker-bert-base-multilingual-cased-multinerd"
+NER_MODEL_TAGS = ["LOC", "ORG", "PER"]

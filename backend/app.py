@@ -10,9 +10,10 @@ from src.document_parser import TikaDocumentParser
 from src.regs import SparsePhiRegularizer, SparseThetaRegularizer
 from src.plsi import PLSI
 
-from octis.dataset.dataset import Dataset
-
 from src.constants import *
+
+from octis.dataset.dataset import Dataset
+from span_marker import SpanMarkerModel
 
 
 app = FastAPI()
@@ -31,6 +32,10 @@ document_parser = TikaDocumentParser(
 
 topic_modeling_dataset = Dataset()
 topic_modeling_dataset.load_custom_dataset_from_folder(TOPIC_MODELER_PATH_TO_DATASET)
+
+ner_model = SpanMarkerModel.from_pretrained(
+    NER_MODEL_PATH
+)
 
 
 @app.get("/")
@@ -98,3 +103,13 @@ def topic_modeling(n_topics: int, seed: int):
         })
 
     return results
+
+@app.post("/namedEntityRecognize")
+async def named_entity_recognition(file: UploadFile = File(...)):
+    text = await file.read()
+    text = document_parser.parse(text)
+
+    predictions = ner_model.predict(text)
+    predictions = [pred for pred in predictions if pred["label"] in NER_MODEL_TAGS]
+
+    return predictions
