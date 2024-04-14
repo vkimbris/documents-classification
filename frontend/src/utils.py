@@ -5,7 +5,6 @@ import requests
 from src.constants import SERVER_API
 
 
-
 def get_labels() -> List[str]:
     """
     Retrieves available labels from the server API using GET request.

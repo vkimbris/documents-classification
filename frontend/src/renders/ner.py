@@ -2,10 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 
-from src.constants import SERVER_API
-
-NER_COLUMNS = {"span": "Сущность", "label": "Класс"}
-NER_ENTITIES = {"PER": "Человек", "ORG": "Организация", "LOC": "Местоположение"}
+from src.constants import SERVER_API, NER_ENTITIES, NER_COLUMNS
 
 
 def render_ner_section():
@@ -19,15 +16,15 @@ def render_ner_section():
     Это очень полезно, чтобы узнать более подробную информацию о документе и сделать выводы о принадлежности тому или иному классу.
      ''')
     uploaded_file = st.file_uploader("Загрузка датасета",
-                                      accept_multiple_files=False,
-                                      key="ner_loading")
+                                     accept_multiple_files=False,
+                                     key="ner_loading")
 
     if uploaded_file is not None:
         st.session_state['ner_file'] = uploaded_file
 
         file = [('file', (st.session_state['training_file'].name,
-                    st.session_state['training_file'].read(),
-                    'multipart/form-data'))]
+                          st.session_state['training_file'].read(),
+                          'multipart/form-data'))]
 
         response = requests.request("POST", f"{SERVER_API}/namedEntityRecognize", files=file)
         result = response.json()
