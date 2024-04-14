@@ -10,13 +10,6 @@ services:
     ports:
       - "0.0.0.0:8000:8000"
 
-  db:
-    build:
-      context: "./db"
-      dockerfile: Dockerfile
-    ports:
-      - "0.0.0.0:8001:8001"
-
   frontend:
     depends_on:
       - backend
