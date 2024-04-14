@@ -22,8 +22,8 @@ def render_ner_section():
     if uploaded_file is not None:
         st.session_state['ner_file'] = uploaded_file
 
-        file = [('file', (st.session_state['training_file'].name,
-                          st.session_state['training_file'].read(),
+        file = [('file', (st.session_state['ner_file'].name,
+                          st.session_state['ner_file'].read(),
                           'multipart/form-data'))]
 
         response = requests.request("POST", f"{SERVER_API}/namedEntityRecognize", files=file)
