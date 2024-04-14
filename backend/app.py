@@ -52,7 +52,7 @@ def train(train_data: UploadFile = File(...)):
 
     return {"status": "Model trained succesfully.", "classificationReport": metrics}
 
-@app.post("/classify-doc")
+@app.post("/classifyDocuments")
 async def classify_document(files: list[UploadFile]):
     predictions = []
     for file in files:

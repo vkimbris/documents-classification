@@ -89,7 +89,7 @@ class SklearnDocumentClassifier(BaseDocumentClassifier):
 
         vectorizer = TfidfVectorizer().fit(new_data.text)
 
-        train, test = train_test_split(new_data, test_size=self.test_size, random_state=self.random_state)
+        train, test = train_test_split(new_data, test_size=self.test_size, random_state=self.random_state, stratify=new_data["class"])
 
         X_train = vectorizer.transform(train.text)
         y_train = train["class"]
