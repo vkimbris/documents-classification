@@ -25,7 +25,7 @@ def render_ner_section():
         file = [('file', (st.session_state['ner_file'].name,
                           st.session_state['ner_file'].read(),
                           'multipart/form-data'))]
-
+        st.info("Пожалуйста, подождите!")
         response = requests.request("POST", f"{SERVER_API}/namedEntityRecognize", files=file)
         result = response.json()
 
@@ -34,7 +34,7 @@ def render_ner_section():
             return
 
         df = pd.DataFrame(result)
-        df = df.rename(columns=NER_COLUMNS)[NER_COLUMNS]
+        df = df.rename(columns=NER_COLUMNS)[NER_COLUMNS.values()]
         df["Класс"] = df["Класс"].replace(NER_ENTITIES)
         df.drop_duplicates(inplace=True)
 
